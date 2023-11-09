@@ -37,7 +37,7 @@
         "clue/stream-filter": "^1.4.1",
         "hounddd/omnipay-systempay": "dev-master",
         "ext-json": "*",
-        "symfony/mime": "^5",
+        "symfony/mime": "^4",
         "symfony/http-foundation": "^4" 
     },
     "require-dev": {
