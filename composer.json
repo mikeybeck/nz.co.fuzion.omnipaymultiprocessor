@@ -27,7 +27,7 @@
     ],
     "require":
     {
-        "omnipay/omnipay": "~2.0",
+        "omnipay/omnipay": "~6.3",
         "dioscouri/omnipay-cybersource": "master",
         "alfaproject/omnipay-skrill": "dev-master",
         "omnipay/bitpay": "dev-master",
