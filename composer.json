@@ -43,7 +43,7 @@
     {
         "omnipay/tests": "~2.0"
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
     "name": "nz.co.fuzion.omnipaymultiprocessor",
     "type": "civicrm-extension"
 }
