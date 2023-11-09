@@ -2,11 +2,12 @@
 
 namespace Omnipay\AuthorizeNet\Message;
 
-use Omnipay\Common\Message\AbstractRequest;
-
 /**
  * Authorize.Net SIM Abstract Request
  */
+
+use Omnipay\Common\Message\AbstractRequest;
+
 abstract class SIMAbstractRequest extends AbstractRequest
 {
     /**
@@ -32,6 +33,16 @@ abstract class SIMAbstractRequest extends AbstractRequest
     public function setTransactionKey($value)
     {
         return $this->setParameter('transactionKey', $value);
+    }
+
+    public function getSignatureKey()
+    {
+        return $this->getParameter('signatureKey');
+    }
+
+    public function setSignatureKey($value)
+    {
+        return $this->setParameter('signatureKey', $value);
     }
 
     public function getDeveloperMode()
@@ -160,9 +171,9 @@ abstract class SIMAbstractRequest extends AbstractRequest
 
     public function sendData($data)
     {
-        $httpResponse = $this->httpClient->post($this->getEndpoint(), null, $data)->send();
+        $httpResponse = $this->httpClient->request('POST', $this->getEndpoint(), [], http_build_query($data));
 
-        return $this->response = new AIMResponse($this, $httpResponse->getBody());
+        return $this->response = new AIMResponse($this, $httpResponse->getBody()->getContents());
     }
 
     public function getEndpoint()

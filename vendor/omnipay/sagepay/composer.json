@@ -20,22 +20,35 @@
             "email": "adrian@adrianmacneil.com"
         },
         {
+            "name": "Jason Judge",
+            "email": "jason.judge@academe.co.uk"
+        },
+        {
             "name": "Omnipay Contributors",
             "homepage": "https://github.com/thephpleague/omnipay-sagepay/contributors"
         }
     ],
     "autoload": {
-        "psr-4": { "Omnipay\\SagePay\\" : "src/" }
+        "psr-4": {
+            "Omnipay\\SagePay\\" : "src/"
+        }
     },
     "require": {
-        "omnipay/common": "~2.0"
+        "php": "^5.6|^7",
+        "omnipay/common": "~3.0"
     },
     "require-dev": {
-        "omnipay/tests": "~2.0"
+        "omnipay/tests": "~3.0",
+        "squizlabs/php_codesniffer": "^3"
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.0.x-dev"
+            "dev-master": "3.0.x-dev"
         }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "check-style": "phpcs -p --standard=PSR2 src/",
+        "fix-style": "phpcbf -p --standard=PSR2 src/"
     }
 }

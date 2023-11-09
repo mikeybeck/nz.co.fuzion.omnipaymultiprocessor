@@ -36,6 +36,20 @@ abstract class AIMAbstractRequest extends AbstractRequest
         return $this->setParameter('transactionKey', $value);
     }
 
+    // AIM does not use signatureKey, but it is included here just
+    // to get the tests to run. Some structural refactoring will be
+    // needed to work around this.
+
+    public function getSignatureKey()
+    {
+        return $this->getParameter('signatureKey');
+    }
+
+    public function setSignatureKey($value)
+    {
+        return $this->setParameter('signatureKey', $value);
+    }
+
     public function getDeveloperMode()
     {
         return $this->getParameter('developerMode');
@@ -60,6 +74,7 @@ abstract class AIMAbstractRequest extends AbstractRequest
     {
         return $this->getParameter('hashSecret');
     }
+
     public function setHashSecret($value)
     {
         return $this->setParameter('hashSecret', $value);
@@ -100,6 +115,26 @@ abstract class AIMAbstractRequest extends AbstractRequest
         return $this->getDeveloperMode() ? $this->getDeveloperEndpoint() : $this->getLiveEndpoint();
     }
 
+    public function getSolutionId()
+    {
+        return $this->getParameter('solutionId');
+    }
+
+    public function setSolutionId($value)
+    {
+        return $this->setParameter('solutionId', $value);
+    }
+
+    public function getAuthCode()
+    {
+        return $this->getParameter('authCode');
+    }
+
+    public function setAuthCode($value)
+    {
+        return $this->setParameter('authCode', $value);
+    }
+
     /**
      * @return TransactionReference
      */
@@ -113,13 +148,10 @@ abstract class AIMAbstractRequest extends AbstractRequest
         if (substr($value, 0, 1) === '{') {
             // Value is a complex key containing the transaction ID and other properties
             $transactionRef = new TransactionReference($value);
-            $data = json_decode($value);
-            $transactionRef = $data->transId;
         } else {
             // Value just contains the transaction ID
             $transactionRef = new TransactionReference();
             $transactionRef->setTransId($value);
-            $transactionRef = $value;
         }
 
         return $this->setParameter('transactionReference', $transactionRef);
@@ -206,9 +238,9 @@ abstract class AIMAbstractRequest extends AbstractRequest
         $headers = array('Content-Type' => 'text/xml; charset=utf-8');
 
         $data = $data->saveXml();
-        $httpResponse = $this->httpClient->post($this->getEndpoint(), $headers, $data)->send();
+        $httpResponse = $this->httpClient->request('POST', $this->getEndpoint(), $headers, $data);
 
-        return $this->response = new AIMResponse($this, $httpResponse->getBody());
+        return $this->response = new AIMResponse($this, $httpResponse->getBody()->getContents());
     }
 
     /**
@@ -244,12 +276,21 @@ abstract class AIMAbstractRequest extends AbstractRequest
 
     protected function addTransactionType(\SimpleXMLElement $data)
     {
-        if (!$this->action) {
-            // The extending class probably hasn't specified an "action"
+        if (! $this->action) {
+            // The extending class probably hasn't specified an "action".
             throw new InvalidRequestException();
         }
 
         $data->transactionRequest->transactionType = $this->action;
+    }
+
+    protected function addSolutionId(\SimpleXMLElement $data)
+    {
+        $solutionId = $this->getSolutionId();
+
+        if (!empty($solutionId)) {
+            $data->transactionRequest->solution->id = $solutionId;
+        }
     }
 
     /**

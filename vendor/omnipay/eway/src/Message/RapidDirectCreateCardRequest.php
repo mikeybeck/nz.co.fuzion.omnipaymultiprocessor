@@ -5,16 +5,14 @@
 
 namespace Omnipay\Eway\Message;
 
+use Omnipay\Omnipay;
+
 /**
  * eWAY Rapid Direct Create Card Request
  *
  * Securely stores card details with eWAY as tokens.
  * Once submitted, a TokenCustomerID is provided which can be
  * used in future transactions instead of the card details.
- *
- * Note that since no transaction is processed, the transaction
- * status is returned as false when a token is created. This means that
- * isSuccessful() cannot be used to check for success.
  *
  * Example:
  *
@@ -49,7 +47,9 @@ namespace Omnipay\Eway\Message;
  *   ));
  *
  *   $response = $request->send();
- *   $cardReference = $response->getCardReference();
+ *   if ($response->isSuccessful()) {
+ *       $cardReference = $response->getCardReference();
+ *   }
  * </code>
  *
  * @link https://eway.io/api-v3/#direct-connection
@@ -61,7 +61,7 @@ class RapidDirectCreateCardRequest extends RapidDirectAbstractRequest
     {
         $data = $this->getBaseData();
 
-        $data['Payment'] = array();
+        $data['Payment'] = [];
         $data['Payment']['TotalAmount'] = 0;
 
         $data['Method'] = 'CreateTokenCustomer';
@@ -71,6 +71,38 @@ class RapidDirectCreateCardRequest extends RapidDirectAbstractRequest
 
     protected function getEndpoint()
     {
-        return $this->getEndpointBase().'/DirectPayment.json';
+        return $this->getEndpointBase() . '/DirectPayment.json';
+    }
+
+    public function sendData($data)
+    {
+        $headers = [
+            'Authorization' => 'Basic ' . base64_encode($this->getApiKey() . ':' . $this->getPassword())
+        ];
+
+        $httpResponse = $this->httpClient->request('POST', $this->getEndpoint(), $headers, json_encode($data));
+
+        $this->response = new RapidDirectCreateCardResponse(
+            $this,
+            json_decode((string) $httpResponse->getBody(), true)
+        );
+
+        if ($this->getAction() === 'Purchase' && $this->response->isSuccessful()) {
+            $purchaseGateway = Omnipay::create('Eway_RapidDirect');
+            $purchaseGateway->setApiKey($this->getApiKey());
+            $purchaseGateway->setPassword($this->getPassword());
+            $purchaseGateway->setTestMode($this->getTestMode());
+            $purchaseResponse = $purchaseGateway->purchase([
+                'amount' => $this->getAmount(),
+                'currency' => $this->getCurrency(),
+                'description' => $this->getDescription(),
+                'transactionId' => $this->getTransactionId(),
+                'card' => $this->getCard(),
+                'cardReference' => $this->response->getCardReference(),
+            ])->send();
+            $this->response->setPurchaseResponse($purchaseResponse);
+        }
+
+        return $this->response;
     }
 }

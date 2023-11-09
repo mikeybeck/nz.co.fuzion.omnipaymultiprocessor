@@ -2,8 +2,6 @@
 
 namespace Omnipay\AuthorizeNet\Message;
 
-use Omnipay\Common\CreditCard;
-
 /**
  * Request to create customer payment profile for existing customer.
  */
@@ -15,9 +13,7 @@ class CIMUpdatePaymentProfileRequest extends CIMCreatePaymentProfileRequest
     {
         $this->validate('card', 'customerProfileId', 'customerPaymentProfileId');
 
-        /** @var CreditCard $card */
-        $card = $this->getCard();
-        $card->validate();
+        $this->cardValidate();
 
         $data = $this->getBaseData();
         $data->customerProfileId = $this->getCustomerProfileId();
@@ -44,8 +40,8 @@ class CIMUpdatePaymentProfileRequest extends CIMCreatePaymentProfileRequest
     {
         $headers = array('Content-Type' => 'text/xml; charset=utf-8');
         $data = $data->saveXml();
-        $httpResponse = $this->httpClient->post($this->getEndpoint(), $headers, $data)->send();
+        $httpResponse = $this->httpClient->request('POST', $this->getEndpoint(), $headers, $data);
 
-        return $this->response = new CIMUpdatePaymentProfileResponse($this, $httpResponse->getBody());
+        return $this->response = new CIMUpdatePaymentProfileResponse($this, $httpResponse->getBody()->getContents());
     }
 }

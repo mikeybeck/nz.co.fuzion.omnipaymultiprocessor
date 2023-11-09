@@ -10,20 +10,18 @@ class DirectPostAuthorizeRequestTest extends TestCase
     {
         $this->request = new DirectPostAuthorizeRequest($this->getHttpClient(), $this->getHttpRequest());
 
-        $this->request->initialize(
-            array(
-                'merchantId' => 'foo',
-                'transactionPassword' => 'bar',
-                'amount' => '12.00',
-                'returnUrl' => 'https://www.example.com/return',
-                'card' => array(
-                    'number' => '4444333322221111',
-                    'expiryMonth' => '6',
-                    'expiryYear' => '2020',
-                    'cvv' => '123',
-                ),
-            )
-        );
+        $this->request->initialize([
+            'merchantId' => 'foo',
+            'transactionPassword' => 'bar',
+            'amount' => '12.00',
+            'returnUrl' => 'https://www.example.com/return',
+            'card' => [
+                'number' => '4444333322221111',
+                'expiryMonth' => '12',
+                'expiryYear' => date('Y'),
+                'cvv' => '123',
+            ],
+        ]);
     }
 
     public function testFingerprint()
@@ -46,7 +44,7 @@ class DirectPostAuthorizeRequestTest extends TestCase
         $this->assertNull($response->getMessage());
         $this->assertNull($response->getCode());
 
-        $this->assertSame('https://api.securepay.com.au/live/directpost/authorise', $response->getRedirectUrl());
+        $this->assertSame('https://api.securepay.com.au/directpost/authorise', $response->getRedirectUrl());
         $this->assertSame('POST', $response->getRedirectMethod());
 
         $data = $response->getData();

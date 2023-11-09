@@ -5,12 +5,12 @@ namespace Omnipay\PaymentExpress\Message;
 use Omnipay\Common\Message\AbstractRequest;
 
 /**
- * PaymentExpress PxPost Authorize Request
+ * Windcave PxPost Authorize Request
  */
 class PxPostAuthorizeRequest extends AbstractRequest
 {
-    protected $liveEndpoint = 'https://sec.paymentexpress.com/pxpost.aspx';
-    protected $testEndpoint = 'https://uat.paymentexpress.com/pxpost.aspx';
+    protected $liveEndpoint = 'https://sec.windcave.com/pxpost.aspx';
+    protected $testEndpoint = 'https://uat.windcave.com/pxpost.aspx';
     protected $action = 'Auth';
 
     public function getUsername()
@@ -36,6 +36,25 @@ class PxPostAuthorizeRequest extends AbstractRequest
     public function getEndpoint()
     {
         return $this->getTestMode() === true ? $this->testEndpoint : $this->liveEndpoint;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getReceiptEmail()
+    {
+        return $this->getParameter('ReceiptEmail');
+    }
+
+    /**
+     * @param mixed $email
+     * @return $this
+     */
+    public function setReceiptEmail($email)
+    {
+        $this->setParameter('ReceiptEmail', $email);
+
+        return $this;
     }
 
     /**
@@ -164,13 +183,19 @@ class PxPostAuthorizeRequest extends AbstractRequest
             $this->validate('card');
         }
 
+        if ($this->getReceiptEmail()) {
+            $data->ReceiptEmail = $this->getReceiptEmail();
+        }
+
         return $data;
     }
 
     public function sendData($data)
     {
-        $httpResponse = $this->httpClient->post($this->getEndpoint(), null, $data->asXML())->send();
+        $httpResponse = $this->httpClient->request('POST', $this->getEndpoint(), [], $data->asXML());
 
-        return $this->response = new Response($this, $httpResponse->xml());
+        $xml = simplexml_load_string($httpResponse->getBody()->getContents());
+
+        return $this->response = new Response($this, $xml);
     }
 }

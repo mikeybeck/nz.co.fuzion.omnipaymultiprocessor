@@ -2,45 +2,61 @@
     "repositories": [
         {
             "type": "git",
-            "url":  "https://github.com/eileenmcnaughton/omnipay-cybersource.git"
+            "url":  "https://github.com/eileenmcnaughton/omnipay-razorpay.git"
         },
         {
             "type": "git",
-            "url":  "https://github.com/eileenmcnaughton/omnipay-paybox.git"
+            "url":  "https://github.com/eileenmcnaughton/omnipay-eway.git"
         },
         {
             "type": "git",
-            "url":  "https://github.com/sergej-koscejev/omnipay-gopay.git"
+            "url":  "https://github.com/eileenmcnaughton/omnipay-paypal.git"
         },
         {
-            "type": "git",
-            "url":  "https://github.com/eileenmcnaughton/omnipay-paypalstandard.git"
-        },
-        {
-            "type": "git",
-            "url":  "https://github.com/eileenmcnaughton/omnipay-nabtransact.git"
-        },
-        {
-            "type": "git",
-            "url":  "https://github.com/eileenmcnaughton/omnipay-authorizenet.git"
+            "type": "vcs",
+            "url":  "https://github.com/adixon/omnipay-beanstream.git"
         }
+
     ],
     "require":
     {
-        "omnipay/omnipay": "~3.2",
-        "dioscouri/omnipay-cybersource": "master",
-        "alfaproject/omnipay-skrill": "dev-master",
-        "omnipay/bitpay": "dev-master",
-        "fzaninotto/faker": "^1.6@dev",
-        "omnipay/paymentexpress": "dev-master",
-        "omnipay/authorizenet": "dev-master",
-        "omnipay/common": "^3.0@dev"
+        "league/omnipay": "~3.0",
+        "psr/log": "^1.0@dev",
+        "omnipay/paypal": "^3.0@dev",
+        "omnipay/authorizenet": "^3.0@dev",
+        "omnipay/eway": "^3.0@dev",
+        "omnipay/mollie": "^5.1@dev",
+        "sudiptpa/omnipay-nabtransact": "^3.0@dev",
+        "omnipay/sagepay": "^3.0@dev",
+        "omnipay/securepay": "^3.0@dev",
+        "omnipay/stripe": "^3.0@dev",
+        "omnipay/worldpay": "^3.0@dev",
+        "omnipay/paymentexpress": "^3.0@dev",
+        "omnipay/common": "^3.0@dev",
+        "dioscouri/omnipay-cybersource": "^3.0@dev",
+        "fuzion/omnipay-mercanet": "^3.0@dev",
+        "razorpay/omnipay-razorpay": "^3.0@dev",
+        "clue/stream-filter": "^1.4.1",
+        "cloudcogsio/omnipay-firstatlanticcommerce-gateway" : "^1.0.2",
+        "hounddd/omnipay-systempay": "dev-master",
+        "ext-json": "*"
     },
-    "require-dev":
-    {
-        "omnipay/tests": "~2.0"
+    "replace": {
+      "guzzlehttp/guzzle": "^6",
+      "guzzlehttp/psr7": "^1",
+      "psr/http-message-implementation": "^1.0",
+      "psr/log" : "^1",
+      "psr/http-message": "^1.0.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6",
+        "omnipay/tests": "^3.1@dev",
+        "php-http/mock-client": "^1"
     },
     "minimum-stability": "dev",
-    "name": "mikeybeck/nz.co.fuzion.omnipaymultiprocessor",
-    "type": "civicrm-extension"
+    "config": {
+        "platform": {
+            "php": "7.2.0"
+        }
+    }
 }

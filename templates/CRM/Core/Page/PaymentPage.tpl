@@ -1,4 +1,4 @@
-<form action="{$post_url}" method="post">
+<form action="{$post_url}" method="post" id="payment-redirect" class="crm-payment-form">
   {foreach from=$hidden_fields key=hidden_field item=hidden_field_input}
     <input name="{$hidden_field}" value="{$hidden_field_input}" type="hidden"/>
   {/foreach}
@@ -17,16 +17,19 @@
         {if $core_field_name == 'cvv2'}
           <span class="cvv2-icon" title="{ts}Usually the last 3-4 digits in the signature area on the back of the card.{/ts}"> </span>
         {/if}
+        {if $core_field_name == 'credit_card_type'}
+          <div class="crm-credit_card_type-icons"></div>
+        {/if}
 
      {elseif $field_spec.htmlType == 'select'}
-        <select name="{$display_field}" id="{$core_field_name}" class="crm-form-select">
+        <select name="{$display_field}" id="{$core_field_name}" class="crm-form-select required">
           {foreach from=$field_spec.options key=attribute item=attribute_value}
             <option value="{$attribute}">{$attribute_value}</option>
           {/foreach}
         </select>
       {elseif $field_spec.htmlType == 'date'}
         {*  @todo - fix this hard-coding hack *}
-        <select class="crm-form-date required" id="{$display_field}_M" name="card_expiry_date[M]">
+        <select class="crm-form-date required" id="{$field_spec.month_field}" name="{$field_spec.month_field}">
           <option value="">-month-</option>
           <option value="01">Jan</option>
           <option value="02">Feb</option>
@@ -41,18 +44,18 @@
           <option value="11">Nov</option>
           <option value="12">Dec</option>
         </select>&nbsp;
-        <select class="crm-form-date required" id="{$display_field}_Y" name="card_expiry_date[Y]">
+        <select class="crm-form-date required" id="{$field_spec.year_field}" name="{$field_spec.year_field}">
           <option value="">-year-</option>
-          {foreach from=$field_spec.options.year item=year}
-            <option value="{$year}">{$year}</option>
+          {foreach from=$field_spec.options.year key=yearKey item=year}
+            <option value="{$yearKey}">{$year}</option>
           {/foreach}
         </select>
         <input name="{$display_field}" id="{$display_field}" type='hidden' value=""/>
         <script>
 
           // remove spaces, dashes from credit card number
-          cj('#{$display_field}_Y, #{$display_field}_M').change(function(){literal}{{/literal}
-            cj('#{$display_field}').val(cj('#{$display_field}_M').val() + '-' + cj('#{$display_field}_Y').val())
+          cj('#{$field_spec.year_field}, #{$field_spec.month_field}').change(function(){literal}{{/literal}
+            cj('#{$display_field}').val(cj('#{$field_spec.month_field}').val() + '-' + cj('#{$field_spec.year_field}').val())
             {literal}
           });
           {/literal}
@@ -63,8 +66,15 @@
       <div class="clear"></div>
     </div>
   {/foreach}
+  {if empty($display_fields)}<p>{ts}Please Click the pay now button if you are not automatically redirected{/ts}</p>{/if}
 
-  <input class='form-submit default crm-form-submit' type="submit" value="{ts}Submit{/ts}">
-
+  <input class='form-submit default crm-form-submit' type="submit" value="{ts}Pay now{/ts}">
+  {* jQuery validate *}
+  {include file="CRM/Form/validate.tpl"}
 </form>
+{if empty($display_fields)}
+<script type="text/javascript">
+  document.getElementById("payment-redirect").submit();
+</script>
+{/if}
 

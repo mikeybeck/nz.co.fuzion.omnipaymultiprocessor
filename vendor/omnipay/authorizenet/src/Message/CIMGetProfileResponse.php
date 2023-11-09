@@ -26,9 +26,14 @@ class CIMGetProfileResponse extends CIMCreatePaymentProfileResponse
             return null;
         }
 
-        foreach ($this->data['profile'][0]['paymentProfiles'] as $paymentProfile) {
+        // Handle quirkiness with XML -> JSON conversion
+        if (!array_key_exists(0, $this->data['profile']['paymentProfiles'])) {
+            $this->data['profile']['paymentProfiles'] = [$this->data['profile']['paymentProfiles']];
+        }
+
+        foreach ($this->data['profile']['paymentProfiles'] as $paymentProfile) {
             // For every payment  profile check if the last4 matches the last4 of the card in request.
-            $cardLast4 = substr($paymentProfile['payment'][0]['creditCard'][0]['cardNumber'], -4);
+            $cardLast4 = substr($paymentProfile['payment']['creditCard']['cardNumber'], -4);
             if ($last4 == $cardLast4) {
                 return (string)$paymentProfile['customerPaymentProfileId'];
             }
@@ -43,10 +48,5 @@ class CIMGetProfileResponse extends CIMCreatePaymentProfileResponse
             return $this->request->getCustomerPaymentProfileId();
         }
         return null;
-    }
-
-    public function getCustomerId()
-    {
-        return $this->data['profile'][0]['merchantCustomerId'];
     }
 }

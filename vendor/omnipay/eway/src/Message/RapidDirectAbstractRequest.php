@@ -60,10 +60,14 @@ abstract class RapidDirectAbstractRequest extends AbstractRequest
         }
 
         if ($this->getCard()) {
-            $data['Customer']['CardDetails'] = array();
+            $data['Customer']['CardDetails'] = [];
             $data['Customer']['CardDetails']['Name'] = $this->getCard()->getName();
-            $data['Customer']['CardDetails']['ExpiryMonth'] = $this->getCard()->getExpiryDate('m');
-            $data['Customer']['CardDetails']['ExpiryYear'] = $this->getCard()->getExpiryDate('y');
+
+            if ($this->getCard()->getExpiryYear() && $this->getCard()->getExpiryMonth()) {
+                // Expiry date not required if token present
+                $data['Customer']['CardDetails']['ExpiryMonth'] = $this->getCard()->getExpiryDate('m');
+                $data['Customer']['CardDetails']['ExpiryYear'] = $this->getCard()->getExpiryDate('y');
+            }
             $data['Customer']['CardDetails']['CVN'] = $this->getCard()->getCvv();
 
             if ($this->getEncryptedCardNumber()) {
@@ -97,10 +101,12 @@ abstract class RapidDirectAbstractRequest extends AbstractRequest
 
     public function sendData($data)
     {
-        $httpResponse = $this->httpClient->post($this->getEndpoint(), null, json_encode($data))
-            ->setAuth($this->getApiKey(), $this->getPassword())
-            ->send();
+        $headers = [
+            'Authorization' => 'Basic ' . base64_encode($this->getApiKey() . ':' . $this->getPassword())
+        ];
 
-        return $this->response = new RapidResponse($this, $httpResponse->json());
+        $httpResponse = $this->httpClient->request('POST', $this->getEndpoint(), $headers, json_encode($data));
+
+        return $this->response = new RapidResponse($this, json_decode((string) $httpResponse->getBody(), true));
     }
 }

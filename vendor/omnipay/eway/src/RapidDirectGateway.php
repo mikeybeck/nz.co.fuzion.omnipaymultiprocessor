@@ -95,11 +95,11 @@ class RapidDirectGateway extends AbstractGateway
 
     public function getDefaultParameters()
     {
-        return array(
-            'apiKey'   => '',
+        return [
+            'apiKey' => '',
             'password' => '',
             'testMode' => false,
-        );
+        ];
     }
 
     public function getApiKey()
@@ -133,8 +133,11 @@ class RapidDirectGateway extends AbstractGateway
      * @param array $parameters
      * @return \Omnipay\Eway\Message\RapidDirectPurchaseRequest
      */
-    public function purchase(array $parameters = array())
+    public function purchase(array $parameters = [])
     {
+        if (is_array($parameters['card']) && isset($parameters['card']['number']) && substr($parameters['card']['number'], 0, 9) ===  'eCrypted:') {
+            $parameters['encryptedCardNumber'] = $parameters['card']['number'];
+        }
         return $this->createRequest('\Omnipay\Eway\Message\RapidDirectPurchaseRequest', $parameters);
     }
 
@@ -150,8 +153,11 @@ class RapidDirectGateway extends AbstractGateway
      * @param array $parameters
      * @return \Omnipay\Eway\Message\RapidDirectAuthorizeRequest
      */
-    public function authorize(array $parameters = array())
+    public function authorize(array $parameters = [])
     {
+        if (isset($parameters['card']['number']) && substr($parameters['card']['number'], 0, 9) ===  'eCrypted:') {
+            $parameters['encryptedCardNumber'] = $parameters['card']['number'];
+        }
         return $this->createRequest('\Omnipay\Eway\Message\RapidDirectAuthorizeRequest', $parameters);
     }
 
@@ -165,7 +171,7 @@ class RapidDirectGateway extends AbstractGateway
      * @param array $parameters
      * @return \Omnipay\Eway\Message\RapidCaptureRequest
      */
-    public function capture(array $parameters = array())
+    public function capture(array $parameters = [])
     {
         return $this->createRequest('\Omnipay\Eway\Message\RapidCaptureRequest', $parameters);
     }
@@ -180,9 +186,21 @@ class RapidDirectGateway extends AbstractGateway
      * @param array $parameters
      * @return \Omnipay\Eway\Message\RefundRequest
      */
-    public function refund(array $parameters = array())
+    public function refund(array $parameters = [])
     {
         return $this->createRequest('\Omnipay\Eway\Message\RefundRequest', $parameters);
+    }
+
+    /**
+     * Void a Transaction
+     *
+     * @link https://eway.io/api-v3/#pre-auth
+     * @param array $parameters
+     * @return \Omnipay\Eway\Message\RapidDirectVoidRequest
+     */
+    public function void(array $parameters = [])
+    {
+        return $this->createRequest('\Omnipay\Eway\Message\RapidDirectVoidRequest', $parameters);
     }
 
     /**
@@ -197,7 +215,7 @@ class RapidDirectGateway extends AbstractGateway
      * @param array $parameters
      * @return \Omnipay\Eway\Message\RapidDirectCreateCardRequest
      */
-    public function createCard(array $parameters = array())
+    public function createCard(array $parameters = [])
     {
         return $this->createRequest('\Omnipay\Eway\Message\RapidDirectCreateCardRequest', $parameters);
     }
@@ -213,7 +231,7 @@ class RapidDirectGateway extends AbstractGateway
      * @param array $parameters
      * @return \Omnipay\Eway\Message\RapidDirectUpdateCardRequest
      */
-    public function updateCard(array $parameters = array())
+    public function updateCard(array $parameters = [])
     {
         return $this->createRequest('\Omnipay\Eway\Message\RapidDirectUpdateCardRequest', $parameters);
     }

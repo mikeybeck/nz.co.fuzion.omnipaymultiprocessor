@@ -104,6 +104,32 @@ class CreateCustomerRequest extends AbstractRequest
         return $this->setParameter('email', $value);
     }
 
+    public function getName()
+    {
+        return $this->getParameter('name');
+    }
+
+    /**
+     * Sets the customer's name.
+     *
+     * @param string $value
+     * @return CreateCustomerRequest provides a fluent interface.
+     */
+    public function setName($value)
+    {
+        return $this->setParameter('name', $value);
+    }
+
+    public function getSource()
+    {
+        return $this->getParameter('source');
+    }
+
+    public function setSource($value)
+    {
+        $this->setParameter('source', $value);
+    }
+
     public function getData()
     {
         $data = array();
@@ -111,6 +137,10 @@ class CreateCustomerRequest extends AbstractRequest
 
         if ($this->getToken()) {
             $data['card'] = $this->getToken();
+
+            if ($this->getEmail()) {
+                $data['email'] = $this->getEmail();
+            }
         } elseif ($this->getCard()) {
             $data['card'] = $this->getCardData();
             $data['email'] = $this->getCard()->getEmail();
@@ -120,6 +150,18 @@ class CreateCustomerRequest extends AbstractRequest
 
         if ($this->getMetadata()) {
             $data['metadata'] = $this->getMetadata();
+        }
+
+        if ($this->getSource()) {
+            $data['source'] = $this->getSource();
+        }
+
+        if ($this->getName()) {
+            $data['name'] = $this->getName();
+        }
+
+        if ($this->getPaymentMethod()) {
+            $data['payment_method'] = $this->getPaymentMethod();
         }
 
         return $data;

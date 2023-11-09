@@ -14,7 +14,10 @@ class PxPayCompleteAuthorizeRequest extends PxPayAuthorizeRequest
     {
         $result = $this->httpRequest->query->get('result');
         if (empty($result)) {
-            throw new InvalidResponseException;
+            $result = $this->httpRequest->request->get('result');
+            if (empty($result)) {
+                throw new InvalidResponseException;
+            }
         }
 
         // validate dps response
@@ -28,6 +31,6 @@ class PxPayCompleteAuthorizeRequest extends PxPayAuthorizeRequest
 
     protected function createResponse($data)
     {
-        return $this->response = new Response($this, $data);
+        return $this->response = new Response($this, simplexml_load_string($data));
     }
 }
