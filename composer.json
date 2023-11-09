@@ -58,5 +58,7 @@
         "platform": {
             "php": "7.2.0"
         }
-    }
+    },
+    "name": "mikeybeck/nz.co.fuzion.omnipaymultiprocessor",
+    "type": "civicrm-extension"
 }
