@@ -40,7 +40,6 @@
     },
     "replace": {
       "guzzlehttp/guzzle": "^6",
-      "guzzlehttp/psr7": "^1",
       "psr/http-message-implementation": "^1.0",
       "psr/http-message": "^1.0.1"
     },
