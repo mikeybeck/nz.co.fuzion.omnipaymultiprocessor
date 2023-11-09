@@ -35,7 +35,6 @@
         "omnipay/common": "^3.0@dev",
         "dioscouri/omnipay-cybersource": "^3.0@dev",
         "fuzion/omnipay-mercanet": "^3.0@dev",
-        "razorpay/omnipay-razorpay": "^3.0@dev",
         "clue/stream-filter": "^1.4.1",
         "cloudcogsio/omnipay-firstatlanticcommerce-gateway" : "^1.0.2",
         "hounddd/omnipay-systempay": "dev-master",
